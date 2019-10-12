@@ -1,24 +1,68 @@
 ---
 title: "assign4"
 output: html_notebook
+editor_options: 
+  chunk_output_type: console
 ---
 
 
 For the regular expression exercises, try writing first using regular expressions directly, then try using rverbalexpressions. Provide the code for both. 
 
+```{r}
+library(RVerbalExpressions)
+library(lubridate)
+library(stringr)
+library(tidyverse)
+```
+
+
 # Part 1
 
 ## R4DS 16.4.5
 
-Create a vector of dates giving the first day of every month in the current year. 
+Create a vector of dates giving the first day of every month in the current year.
+
+```{r}
+first_day <- years(2019) + months(c(1:12)) + days(1)
+```
+
 
 Write a function that given your birthday (as a date), returns how old you are in years.
 
+```{r}
+age <- function(birthday)
+{
+  duration <- today() - ymd({{birthday}})
+  as.duration(duration)
+}
+
+age(19970626)
+
+```
+
+
 Write a function that given your birthday, returns the day of the week you were born on. 
+
+```{r}
+birthday_ofwk <- function(birthday)
+{
+  wday({{birthday}}, label = T)
+}
+
+birthday_ofwk(ymd(19970626))
+```
+
 
 ## R4DS 14.3.2.1
 
 Given the corpus of common words in stringr::words, create regular expressions that find all words that have seven letters or more. (Since this list is long, you might want to use the match argument to str_view() to show only the matching or non-matching words.)
+
+```{r}
+fruit <- c("banana", "pineapple", "cherry")
+
+str_view(fruit , ".......", match = T)
+```
+
 
 ## R4DS 14.3.3.1
 
@@ -26,9 +70,39 @@ Use str_detect to find all words that:
 
 That only contain consonants. (Hint: thinking about matching “not”-vowels.)
 
+```{r}
+#?str_detect()
+letters_vec <- c("asdfad", "thyrpyn")
+  
+str_detect(letters_vec, "^[^aeiou]+$")
+```
+
+
 Empirically verify the rule “i before e except after c”.
 
+```{r}
+i_b4_e <- c("achieve", "piece", "glacier")
+str_detect(i_b4_e, "(cie|[^c]ei)")
+```
+
 Create a regular expression that will match telephone numbers as commonly written in the US. Split this up into multiple expressions as needed.
+
+```{r}
+telrx <- rx() %>%
+  rx_start_of_line() %>%
+  rx_digit() %>%
+  rx_repeat_previous(3) %>%
+  rx_any_of(c("-.")) %>%
+  rx_digit() %>%
+  rx_repeat_previous(3) %>%
+  rx_any_of(c("-.")) %>%
+  rx_digit() %>%
+  rx_repeat_previous(4) %>%
+  rx_end_of_line() %>%
+  print()
+
+grepl(telrx, c("217.377.3867", "217-377-2867", "EM7.377.4322"))
+```
 
 # Part 2
 
@@ -42,6 +116,7 @@ Choose a dataset (this can be the same dataset as the last assignment, or a new 
 2. Clean up the data. 
 
 *Note: You may request that score for these sections replace your score for the coding portion of Assignment 3.*
+# YES REPLACE MY GRADE FOR ASSIGNMENT 3
 
 4. Using best practices, write four functions which add engineered features to the dataset, including a description and rationale. Include a test to determine whether the features are working as intended. 
 

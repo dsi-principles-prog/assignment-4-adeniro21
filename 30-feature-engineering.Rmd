@@ -1,0 +1,71 @@
+---
+title: "30-feature-engineering"
+output: html_notebook
+---
+
+```{r}
+View(PimaIndiansDiabetes2)
+```
+
+Maybe diabetes can be predicted from an observation's deviation from the average in the varaible. I want to standardize this value, to make a value relative to a column.
+```{r}
+scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE) # x is a vector
+
+std_pregnant <- function(df, vars)
+{
+  df %>%
+    mutate_at(vars, list(std_preg = scale2), na.rm = T) %>%
+    select(contains("_preg"), everything())
+}
+
+PimaIndiansDiabetes2 %>%
+std_pregnant("pregnant")
+
+```
+
+I want to create a binary variable that determines whether or not someone is obese, that is a bmi over 30.
+```{r}
+over30 <- function(x, na.rm = TRUE) ifelse(x > 30, "yes", "no") # x is a vector
+
+obese <- function(df, vars)
+{
+  df %>%
+    mutate_at(vars, list(is_obese = over30)) %>%
+    select(contains("is_obese"), mass, everything())
+}
+
+PimaIndiansDiabetes2 %>%
+  obese("mass")
+```
+
+I want to crate a binary variable that determines whether or not someone has high blood pressure, that is over 80.
+```{r}
+over80 <- function(x, na.rm = TRUE) ifelse(x > 80, "yes", "no") # x is a vector
+
+blood_pressure <- function(df, vars)
+{
+  df %>%
+    mutate_at(vars, list(high_pressure = over80)) %>%
+    select(contains("high_pressure"), pressure, everything())
+}
+
+PimaIndiansDiabetes2 %>%
+  blood_pressure("pressure")
+```
+
+In 2015, adults aged 45 to 64 were the most diagnosed age group for diabetes. I want to have a binary variables that identifies people over the age of 45.
+```{r}
+over45 <- function(x, na.rm = TRUE) ifelse(x > 45, "yes", "no") # x is a vector
+
+age_risk <- function(df, vars)
+{
+  df %>%
+    mutate_at(vars, list(age45 = over45)) %>%
+    select(contains("age45"), age, everything())
+}
+
+PimaIndiansDiabetes2 %>%
+  age_risk("age")
+```
+
+Since this dataset is all numeric I can only create group_by's based upon specific ranges of values within these columns. I craeted some features that create groups based upon a significant threshold in the column, so now I can use this to group by and summarize other measures if I choose to.

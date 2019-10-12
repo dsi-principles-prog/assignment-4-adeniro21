@@ -1,0 +1,21 @@
+---
+title: "10-import"
+output: html_notebook
+---
+#Libraries to be used
+```{r}
+library(tidyverse)
+library(janitor)
+library(readr)
+library(tidyr)
+library(assertr)
+```
+
+#Read in the data
+```{r}
+PimaIndiansDiabetes2 <- read_csv("PimaIndiansDiabetes2.csv")
+#View(PimaIndiansDiabetes2)
+```
+
+
+
